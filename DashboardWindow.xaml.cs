@@ -15,5 +15,11 @@ namespace OrcaPro
             login.Show();
             this.Close();
         }
+
+        private void AbrirClientes_Click(object sender, RoutedEventArgs e)
+        {
+            var tela = new ClientesWindow();
+            tela.ShowDialog();
+        }
     }
 }

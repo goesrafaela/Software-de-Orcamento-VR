@@ -1,5 +1,6 @@
 <Window x:Class="OrcaPro.ClientesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Clientes"
         Height="500"
         Width="700"
@@ -10,24 +11,49 @@
 
         <StackPanel>
 
-            <TextBlock Text="Clientes"
-                       FontSize="22"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"/>
-
             <!-- Formulário -->
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,10">
 
-                <TextBox x:Name="NomeBox" Width="150" Margin="5"/>
-                <TextBox x:Name="EmailBox" Width="150" Margin="5"/>
-                <TextBox x:Name="TelefoneBox" Width="120" Margin="5"/>
+                <!-- Nome -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Nome"
+                               FontSize="12"
+                               Foreground="#555"/>
+                    <TextBox x:Name="NomeBox"
+                             Width="150"
+                             Height="30"/>
+                </StackPanel>
 
-                <Button Content="Adicionar"
-                        Click="Adicionar_Click"
-                        Margin="5"/>
+                <!-- Email -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="E-mail"
+                               FontSize="12"
+                               Foreground="#555"/>
+                    <TextBox x:Name="EmailBox"
+                             Width="150"
+                             Height="30"/>
+                </StackPanel>
+
+                <!-- Telefone -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Telefone"
+                               FontSize="12"
+                               Foreground="#555"/>
+                    <TextBox x:Name="TelefoneBox"
+                             Width="120"
+                             Height="30"/>
+                </StackPanel>
+
+                <!-- Botão -->
+                <StackPanel Margin="5" VerticalAlignment="Bottom">
+                    <Button Content="Adicionar"
+                            Height="30"
+                            Click="Adicionar_Click"/>
+                </StackPanel>
+
             </StackPanel>
 
-            <!-- Lista -->
+            <!-- 👇 AQUI ESTAVA FALTANDO -->
             <DataGrid x:Name="ClientesGrid"
                       Margin="0,10"
                       AutoGenerateColumns="True"

@@ -25,7 +25,8 @@
 
                 <Button Content="Clientes"
                         Margin="10"
-                        Height="35"/>
+                        Height="35"
+                        Click="AbrirClientes_Click"/>
 
                 <Button Content="Orçamentos"
                         Margin="10"

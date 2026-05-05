@@ -1,7 +1,9 @@
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcaPro.csproj.AssemblyReference.cache
+C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\ClientesWindow.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\DashboardWindow.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\MainWindow.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RegisterWindow.baml
+C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\ClientesWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\DashboardWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\MainWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RegisterWindow.g.cs
