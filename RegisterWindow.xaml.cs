@@ -1,6 +1,8 @@
 using System.Windows;
 using OrcaPro.Data;
 using OrcaPro.Models;
+using System.Windows.Input;
+using System.Linq; //
 
 namespace OrcaPro
 {
@@ -11,59 +13,66 @@ namespace OrcaPro
             InitializeComponent();
         }
 
-       private void Cadastrar_Click(object sender, RoutedEventArgs e)
-    {
-        string nome = NomeBox.Text.Trim();
-        string email = EmailBox.Text.Trim();
-        string senha = SenhaBox.Password;
-
-        // Reset erro
-        ErroText.Visibility = Visibility.Collapsed;
-
-        // Validação
-        if (string.IsNullOrEmpty(nome) ||
-            string.IsNullOrEmpty(email) ||
-            string.IsNullOrEmpty(senha))
+        private void Cadastrar_Click(object sender, RoutedEventArgs e)
         {
-            MostrarErro("Preencha todos os campos.");
-            return;
-        }
+            string nome = NomeBox.Text.Trim();
+            string email = EmailBox.Text.Trim();
+            string senha = SenhaBox.Password;
 
-        if (!email.Contains("@"))
-        {
-            MostrarErro("E-mail inválido.");
-            return;
-        }
+            // Reset erro
+            ErroText.Visibility = Visibility.Collapsed;
 
-        using (var db = new AppDbContext())
-        {
-            var existe = db.Usuarios.Any(u => u.Email == email);
-
-            if (existe)
+            // Validação
+            if (string.IsNullOrEmpty(nome) ||
+                string.IsNullOrEmpty(email) ||
+                string.IsNullOrEmpty(senha))
             {
-                MostrarErro("Este e-mail já está cadastrado.");
+                MostrarErro("Preencha todos os campos.");
                 return;
             }
 
-            var usuario = new Usuario
+            if (!email.Contains("@"))
             {
-                Nome = nome,
-                Email = email,
-                Senha = senha
-            };
+                MostrarErro("E-mail inválido.");
+                return;
+            }
 
-            db.Usuarios.Add(usuario);
-            db.SaveChanges();
-    }
+            using (var db = new AppDbContext())
+            {
+                var existe = db.Usuarios.Any(u => u.Email == email);
 
-        MessageBox.Show("Cadastro realizado com sucesso!");
+                if (existe)
+                {
+                    MostrarErro("Este e-mail já está cadastrado.");
+                    return;
+                }
 
-        this.Close();
-    }
-    private void MostrarErro(string mensagem)
+                var usuario = new Usuario
+                {
+                    Nome = nome,
+                    Email = email,
+                    Senha = senha
+                };
+
+                db.Usuarios.Add(usuario);
+                db.SaveChanges();
+            }
+
+            MessageBox.Show("Cadastro realizado com sucesso!");
+
+            this.Close();
+        }
+
+        private void MostrarErro(string mensagem)
         {
             ErroText.Text = mensagem;
             ErroText.Visibility = Visibility.Visible;
+        }
+
+        // 👇 AGORA DENTRO DA CLASSE (correto)
+        private void VoltarLogin_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
         }
     }
 }
