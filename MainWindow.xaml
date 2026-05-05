@@ -18,7 +18,7 @@
 
             <StackPanel>
 
-                <TextBlock Text="OrçaPro"
+                <TextBlock Text="VR Reservatórios"
                            FontSize="22"
                            FontWeight="Bold"
                            HorizontalAlignment="Center"/>
@@ -29,13 +29,31 @@
                            Margin="0,0,0,15"
                            HorizontalAlignment="Center"/>
 
+                <!-- 👇 LABEL EMAIL -->
+                <TextBlock Text="E-mail"
+                           FontSize="12"
+                           Foreground="#555"
+                           Margin="0,5,0,0"/>
+
                 <TextBox x:Name="EmailBox"
                          Height="30"
                          Margin="0,5"/>
 
+                <!-- 👇 LABEL SENHA -->
+                <TextBlock Text="Senha"
+                           FontSize="12"
+                           Foreground="#555"
+                           Margin="0,5,0,0"/>
+
                 <PasswordBox x:Name="SenhaBox"
                              Height="30"
                              Margin="0,5"/>
+                
+                <TextBlock x:Name="ErroText"
+                            Foreground="Red"
+                            FontSize="11"
+                            Visibility="Collapsed"
+                            Margin="0,0,0,10"/>
 
                 <Button Content="Entrar"
                         Height="35"

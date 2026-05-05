@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\App.xaml
-2582614379
+31376768428
 
-7536346579
+81511978665
 216-287287836
-MainWindow.xaml;RegisterWindow.xaml;
+DashboardWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;
 
 False
 

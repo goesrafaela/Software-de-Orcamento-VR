@@ -1,0 +1,39 @@
+<Window x:Class="OrcaPro.ClientesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        Title="Clientes"
+        Height="500"
+        Width="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F6FA">
+
+    <Grid Margin="20">
+
+        <StackPanel>
+
+            <TextBlock Text="Clientes"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <!-- Formulário -->
+            <StackPanel Orientation="Horizontal">
+
+                <TextBox x:Name="NomeBox" Width="150" Margin="5"/>
+                <TextBox x:Name="EmailBox" Width="150" Margin="5"/>
+                <TextBox x:Name="TelefoneBox" Width="120" Margin="5"/>
+
+                <Button Content="Adicionar"
+                        Click="Adicionar_Click"
+                        Margin="5"/>
+            </StackPanel>
+
+            <!-- Lista -->
+            <DataGrid x:Name="ClientesGrid"
+                      Margin="0,10"
+                      AutoGenerateColumns="True"
+                      Height="300"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

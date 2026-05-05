@@ -13,7 +13,7 @@
         <Border Background="#1E293B" Width="200" HorizontalAlignment="Left">
             <StackPanel Margin="10">
 
-                <TextBlock Text="OrçaPro"
+                <TextBlock Text="VR Reservatórios"
                            Foreground="White"
                            FontSize="20"
                            FontWeight="Bold"
@@ -42,9 +42,50 @@
         <!-- Conteúdo -->
         <Grid Margin="210,20,20,20">
 
-            <TextBlock Text="Bem-vindo ao sistema!"
-                       FontSize="24"
-                       FontWeight="Bold"/>
+            <StackPanel>
+
+                <!-- Título -->
+                <TextBlock Text="Bem-vindo ao sistema!"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Margin="0,0,0,20"/>
+
+                <!-- Cards -->
+                <WrapPanel>
+
+                    <Border Background="White"
+                            Width="200"
+                            Height="100"
+                            Margin="10"
+                            CornerRadius="10">
+
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Clientes"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="0"
+                                       FontSize="20"/>
+                        </StackPanel>
+
+                    </Border>
+
+                    <Border Background="White"
+                            Width="200"
+                            Height="100"
+                            Margin="10"
+                            CornerRadius="10">
+
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Orçamentos"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="0"
+                                       FontSize="20"/>
+                        </StackPanel>
+
+                    </Border>
+
+                </WrapPanel>
+
+            </StackPanel>
 
         </Grid>
 

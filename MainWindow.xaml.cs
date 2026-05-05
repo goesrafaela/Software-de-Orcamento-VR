@@ -18,24 +18,43 @@ namespace OrcaPro
             }
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+       private void Login_Click(object sender, RoutedEventArgs e)
         {
+            string email = EmailBox.Text.Trim();
+            string senha = SenhaBox.Password;
+
+            ErroText.Visibility = Visibility.Collapsed;
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+            {
+                MostrarErro("Preencha todos os campos.");
+                return;
+            }
+
             using (var db = new AppDbContext())
             {
                 var usuario = db.Usuarios.FirstOrDefault(u =>
-                    u.Email == EmailBox.Text &&
-                    u.Senha == SenhaBox.Password);
+                    u.Email == email &&
+                    u.Senha == senha);
 
                 if (usuario != null)
                 {
-                    MessageBox.Show("Login realizado!");
+                    var dashboard = new DashboardWindow();
+                    dashboard.Show();
+                    this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Usuário ou senha inválidos!");
+                    MostrarErro("Usuário ou senha inválidos.");
                 }
             }
-        }
+}
+
+private void MostrarErro(string mensagem)
+{
+    ErroText.Text = mensagem;
+    ErroText.Visibility = Visibility.Visible;
+}
         private void AbrirCadastro(object sender, MouseButtonEventArgs e)
         {
             var tela = new RegisterWindow();
