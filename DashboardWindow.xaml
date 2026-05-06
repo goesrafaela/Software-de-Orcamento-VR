@@ -25,6 +25,10 @@
                 <Button Content="Clientes" Margin="10" Height="35" Click="AbrirClientes_Click"/>
                 <Button Content="Orçamentos" Margin="10" Height="35" Click="AbrirOrcamentos_Click"/>
                 <Button Content="Sair" Margin="10" Height="35" Click="Sair_Click"/>
+                <Button Content="Histórico"
+        Margin="10"
+        Height="35"
+        Click="AbrirHistorico_Click"/>
 
             </StackPanel>
         </Border>

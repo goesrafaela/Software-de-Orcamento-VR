@@ -68,6 +68,12 @@ namespace OrcaPro
             }
         }
 
+        private void AbrirHistorico_Click(object sender, RoutedEventArgs e)
+        {
+            var tela = new HistoricoWindow();
+            tela.ShowDialog();
+        }
+
         private void AbrirClientes_Click(object sender, RoutedEventArgs e)
         {
             var tela = new ClientesWindow();

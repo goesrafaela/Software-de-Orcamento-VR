@@ -1,0 +1,58 @@
+<Window x:Class="OrcaPro.HistoricoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Histórico de Orçamentos"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F6FA"
+        WindowState="Maximized">
+
+    <Grid Margin="20">
+
+        <StackPanel>
+
+            <!-- 🔍 FILTROS -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+
+                <!-- Cliente -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Cliente" FontSize="12"/>
+                    <ComboBox x:Name="ClienteFiltro"
+                              Width="150"
+                              SelectionChanged="Filtrar"/>
+                </StackPanel>
+
+                <!-- Status -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Status" FontSize="12"/>
+                    <ComboBox x:Name="StatusFiltro"
+                              Width="150"
+                              SelectionChanged="Filtrar">
+                        <ComboBoxItem Content="Todos"/>
+                        <ComboBoxItem Content="Em andamento"/>
+                        <ComboBoxItem Content="Aprovado"/>
+                        <ComboBoxItem Content="Finalizado"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Busca -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Buscar" FontSize="12"/>
+                    <TextBox x:Name="BuscaBox"
+                             Width="200"
+                             TextChanged="Filtrar"/>
+                </StackPanel>
+
+            </StackPanel>
+
+            <!-- 📊 GRID -->
+            <DataGrid x:Name="HistoricoGrid"
+                      AutoGenerateColumns="True"
+                      Height="400"
+                      LoadingRow="Grid_LoadingRow"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>
