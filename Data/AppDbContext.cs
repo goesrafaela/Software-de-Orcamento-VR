@@ -7,10 +7,12 @@ namespace OrcaPro.Data
     {
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Orcamento> Orcamentos { get; set; }
+        public DbSet<OrcamentoItem> OrcamentoItens { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            options.UseSqlite("Data Source=orcamento.db");
+            optionsBuilder.UseSqlite("Data Source=OrcaPro.db");
         }
     }
 }

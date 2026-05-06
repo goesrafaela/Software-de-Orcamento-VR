@@ -1,0 +1,131 @@
+<Window x:Class="OrcaPro.OrcamentosWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Orçamentos"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F6FA"
+        WindowState="Maximized"
+        WindowStyle="SingleBorderWindow">
+
+    <Grid Margin="20">
+
+        <StackPanel>
+
+            <!-- CLIENTE -->
+            <StackPanel Margin="0,0,0,15">
+                <TextBlock Text="Cliente"
+                           FontSize="12"
+                           Foreground="#555"
+                           Margin="0,0,0,3"/>
+                <ComboBox x:Name="ClienteCombo"
+                          Height="30"/>
+            </StackPanel>
+
+            <!-- FORM ITEM -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+
+                <!-- Descrição -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Descrição do serviço/produto"
+                               FontSize="12"
+                               Foreground="#555"
+                               Margin="0,0,0,3"/>
+                    <TextBox x:Name="DescricaoBox"
+                             Width="250"
+                             Height="30"/>
+                </StackPanel>
+
+                <!-- Quantidade -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Quantidade"
+                               FontSize="12"
+                               Foreground="#555"
+                               Margin="0,0,0,3"/>
+                    <TextBox x:Name="QtdBox"
+                             Width="80"
+                             Height="30"/>
+                </StackPanel>
+
+                <!-- Valor -->
+                <StackPanel Margin="5">
+                    <TextBlock Text="Valor Unitário (R$)"
+                               FontSize="12"
+                               Foreground="#555"
+                               Margin="0,0,0,3"/>
+                    <TextBox x:Name="ValorBox"
+                             Width="100"
+                             Height="30"/>
+                </StackPanel>
+
+                <!-- Botão -->
+                <StackPanel Margin="5" VerticalAlignment="Bottom">
+                    <Button Content="Adicionar Item"
+                            Height="30"
+                            Padding="10,0"
+                            Background="#1E5FA8"
+                            Foreground="White"
+                            Click="AdicionarItem_Click"/>
+                </StackPanel>
+
+            </StackPanel>
+
+            <!-- GRID ITENS -->
+            <TextBlock Text="Itens do orçamento"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Margin="0,10,0,5"/>
+
+            <DataGrid x:Name="ItensGrid"
+                      Margin="0,0,0,10"
+                      Height="250"
+                      AutoGenerateColumns="True"
+                      LoadingRow="ItensGrid_LoadingRow"/>
+
+            <!-- TOTAL -->
+            <Border Background="White" Padding="10" CornerRadius="8">
+                <TextBlock x:Name="TotalText"
+                           Text="TOTAL: R$ 0,00"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Right"/>
+            </Border>
+
+            <!-- AÇÕES -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+
+                <Button Content="Salvar Orçamento"
+                        Margin="5"
+                        Height="35"
+                        Background="#1E5FA8"
+                        Foreground="White"
+                        Click="Salvar_Click"/>
+
+                <Button Content="Aprovar"
+                        Margin="5"
+                        Height="35"
+                        Background="#28A745"
+                        Foreground="White"
+                        Click="Aprovar_Click"/>
+
+                <Button Content="Finalizar"
+                        Margin="5"
+                        Height="35"
+                        Background="#6F42C1"
+                        Foreground="White"
+                        Click="Finalizar_Click"/>
+
+                <Button Content="Excluir Item"
+                        Margin="5"
+                        Height="35"
+                        Background="#D9534F"
+                        Foreground="White"
+                        Click="ExcluirItem_Click"/>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </Grid>
+</Window>
