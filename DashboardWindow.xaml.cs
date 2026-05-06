@@ -10,37 +10,61 @@ namespace OrcaPro
         public DashboardWindow()
         {
             InitializeComponent();
+            this.Loaded += DashboardWindow_Loaded;
+        }
+
+        private void DashboardWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             CarregarDashboard();
         }
 
         public void CarregarDashboard()
         {
-            using (var db = new AppDbContext())
+            try
             {
-                // Clientes
-                ClientesCount.Text = db.Clientes.Count().ToString();
+                using (var db = new AppDbContext())
+                {
+                    // 🔥 garante que banco existe
+                    db.Database.EnsureCreated();
 
-                // Status
-                EmAndamentoCount.Text = db.Orcamentos
-                    .Count(o => o.Status == "Em andamento")
-                    .ToString();
+                    // CLIENTES
+                    var totalClientes = db.Clientes?.Count() ?? 0;
+                    ClientesCount.Text = totalClientes.ToString();
 
-                AprovadosCount.Text = db.Orcamentos
-                    .Count(o => o.Status == "Aprovado")
-                    .ToString();
+                    // ORÇAMENTOS
+                    var orcamentos = db.Orcamentos?.ToList() ?? new System.Collections.Generic.List<Models.Orcamento>();
 
-                // 💰 Faturamento (somente aprovados)
-                var faturamento = db.Orcamentos
-                    .Where(o => o.Status == "Aprovado")
-                    .Sum(o => (decimal?)o.Total) ?? 0;
+                    // STATUS
+                    EmAndamentoCount.Text = orcamentos
+                        .Count(o => o.Status == "Em andamento")
+                        .ToString();
 
-                FaturamentoText.Text = $"R$ {faturamento:N2}";
+                    AprovadosCount.Text = orcamentos
+                        .Count(o => o.Status == "Aprovado")
+                        .ToString();
 
-                // 📊 Lista
-                OrcamentosGrid.ItemsSource = db.Orcamentos
-                    .OrderByDescending(o => o.Id)
-                    .Take(10)
-                    .ToList();
+                    // FATURAMENTO
+                    var faturamento = orcamentos
+                        .Where(o => o.Status == "Aprovado")
+                        .Sum(o => o.Total);
+
+                    FaturamentoText.Text = $"R$ {faturamento:N2}";
+
+                    // GRID
+                    OrcamentosGrid.ItemsSource = orcamentos
+                        .OrderByDescending(o => o.Id)
+                        .Take(10)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Erro ao carregar dashboard:\n\n" + ex.Message,
+                    "Erro",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
@@ -48,19 +72,38 @@ namespace OrcaPro
         {
             try
             {
-                using (var db = new AppDbContext())
-                {
-                    if (!db.Clientes.Any())
-                    {
-                        MessageBox.Show("Cadastre um cliente antes.");
-                        return;
-                    }
-                }
-
                 var tela = new OrcamentosWindow();
                 tela.ShowDialog();
 
-                CarregarDashboard(); // 🔥 atualiza ao fechar
+                CarregarDashboard();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao abrir orçamentos:\n" + ex.Message);
+            }
+        }
+
+        private void AbrirClientes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var tela = new ClientesWindow();
+                tela.ShowDialog();
+
+                CarregarDashboard();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao abrir clientes:\n" + ex.Message);
+            }
+        }
+
+        private void AbrirHistorico_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var tela = new HistoricoWindow();
+                tela.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -68,18 +111,17 @@ namespace OrcaPro
             }
         }
 
-        private void AbrirHistorico_Click(object sender, RoutedEventArgs e)
+        private void AbrirRelatorio_Click(object sender, RoutedEventArgs e)
         {
-            var tela = new HistoricoWindow();
-            tela.ShowDialog();
-        }
-
-        private void AbrirClientes_Click(object sender, RoutedEventArgs e)
-        {
-            var tela = new ClientesWindow();
-            tela.ShowDialog();
-
-            CarregarDashboard(); // 🔥 atualiza ao fechar
+            try
+            {
+                var tela = new RelatorioWindow();
+                tela.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro:\n" + ex.Message);
+            }
         }
 
         private void Sair_Click(object sender, RoutedEventArgs e)

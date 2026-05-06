@@ -7,6 +7,7 @@ using OrcaPro.Data;
 using OrcaPro.Services;
 using OrcaPro.Models;
 
+
 namespace OrcaPro
 {
     public partial class OrcamentosWindow : Window
@@ -33,6 +34,18 @@ namespace OrcaPro
 
                 if (lista.Count > 0)
                     ClienteCombo.SelectedIndex = 0;
+            }
+        }
+        private void ItensGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            var item = e.Row.Item as OrcamentoItem;
+
+            if (item == null) return;
+
+            // exemplo de destaque
+            if (item.Total > 1000)
+            {
+                e.Row.Background = Brushes.LightGreen;
             }
         }
 

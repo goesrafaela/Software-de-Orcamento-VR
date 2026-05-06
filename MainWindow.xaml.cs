@@ -18,7 +18,7 @@ namespace OrcaPro
             }
         }
 
-       private void Login_Click(object sender, RoutedEventArgs e)
+        private void Login_Click(object sender, RoutedEventArgs e)
         {
             string email = EmailBox.Text.Trim();
             string senha = SenhaBox.Password;
@@ -38,9 +38,17 @@ namespace OrcaPro
                     u.Senha == senha);
 
                 if (usuario != null)
+                
                 {
+                    
                     var dashboard = new DashboardWindow();
+
+                    // 🔥 ESSA LINHA RESOLVE O PROBLEMA
+                    Application.Current.MainWindow = dashboard;
+
                     dashboard.Show();
+
+                    // 👇 agora pode fechar sem matar o app
                     this.Close();
                 }
                 else
@@ -48,7 +56,7 @@ namespace OrcaPro
                     MostrarErro("Usuário ou senha inválidos.");
                 }
             }
-}
+        }
 
 private void MostrarErro(string mensagem)
 {

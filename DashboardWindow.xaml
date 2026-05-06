@@ -21,14 +21,34 @@
                            FontWeight="Bold"
                            Margin="10"/>
 
-                <Button Content="Dashboard" Margin="10" Height="35"/>
-                <Button Content="Clientes" Margin="10" Height="35" Click="AbrirClientes_Click"/>
-                <Button Content="Orçamentos" Margin="10" Height="35" Click="AbrirOrcamentos_Click"/>
-                <Button Content="Sair" Margin="10" Height="35" Click="Sair_Click"/>
+                <Button Content="Dashboard" 
+                    Margin="10" 
+                    Height="35"/>
+                
+                <Button Content="Clientes" 
+                    Margin="10" 
+                    Height="35" 
+                    Click="AbrirClientes_Click"/>
+                
+                <Button Content="Orçamentos" 
+                    Margin="10" 
+                    Height="35" 
+                    Click="AbrirOrcamentos_Click"/>
+                            
                 <Button Content="Histórico"
-        Margin="10"
-        Height="35"
-        Click="AbrirHistorico_Click"/>
+                Margin="10"
+                Height="35"
+                Click="AbrirHistorico_Click"/>
+            
+                <Button Content="Relatórios"
+                Margin="10"
+                Height="35"
+                Click="AbrirRelatorio_Click"/>
+
+                <Button Content="Sair" 
+                        Margin="10" 
+                        Height="35" 
+                        Click="Sair_Click"/>
 
             </StackPanel>
         </Border>
