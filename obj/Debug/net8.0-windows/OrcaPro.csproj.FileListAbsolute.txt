@@ -18,6 +18,7 @@ C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\LatoFont\Lato-ThinItalic.ttf
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\LatoFont\OFL.txt
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\OrcaPro.exe
+C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\Assets\logo.png
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\OrcaPro.deps.json
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\OrcaPro.runtimeconfig.json
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\bin\Debug\net8.0-windows\OrcaPro.dll
@@ -181,6 +182,7 @@ C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RegisterWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RelatorioWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcaPro_Content.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcaPro_MarkupCompile.cache
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcaPro.g.resources
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcaPro.GeneratedMSBuildEditorConfig.editorconfig

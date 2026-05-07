@@ -11,7 +11,7 @@
 
     <Grid>
 
-        <!-- Sidebar -->
+        <!-- SIDEBAR -->
         <Border Background="#1E293B"
                 Width="200"
                 HorizontalAlignment="Left">
@@ -64,7 +64,7 @@
 
                 <!-- TÍTULO -->
                 <TextBlock Text="Dashboard"
-                           FontSize="26"
+                           FontSize="28"
                            FontWeight="Bold"
                            Margin="0,0,0,20"/>
 
@@ -79,10 +79,14 @@
                             CornerRadius="10">
 
                         <StackPanel Margin="10">
-                            <TextBlock Text="Clientes"/>
+
+                            <TextBlock Text="Clientes"
+                                       FontSize="14"/>
+
                             <TextBlock x:Name="ClientesCount"
-                                       FontSize="22"
+                                       FontSize="24"
                                        FontWeight="Bold"/>
+
                         </StackPanel>
 
                     </Border>
@@ -95,10 +99,14 @@
                             CornerRadius="10">
 
                         <StackPanel Margin="10">
-                            <TextBlock Text="Em andamento"/>
+
+                            <TextBlock Text="Em andamento"
+                                       FontSize="14"/>
+
                             <TextBlock x:Name="EmAndamentoCount"
-                                       FontSize="22"
+                                       FontSize="24"
                                        FontWeight="Bold"/>
+
                         </StackPanel>
 
                     </Border>
@@ -111,15 +119,19 @@
                             CornerRadius="10">
 
                         <StackPanel Margin="10">
-                            <TextBlock Text="Aprovados"/>
+
+                            <TextBlock Text="Aprovados"
+                                       FontSize="14"/>
+
                             <TextBlock x:Name="AprovadosCount"
-                                       FontSize="22"
+                                       FontSize="24"
                                        FontWeight="Bold"/>
+
                         </StackPanel>
 
                     </Border>
 
-                    <!-- FATURAMENTO -->
+                    <!-- FATURAMENTO TOTAL -->
                     <Border Background="#D1ECF1"
                             Width="220"
                             Height="100"
@@ -127,10 +139,54 @@
                             CornerRadius="10">
 
                         <StackPanel Margin="10">
-                            <TextBlock Text="Faturamento"/>
+
+                            <TextBlock Text="Faturamento Total"
+                                       FontSize="14"/>
+
                             <TextBlock x:Name="FaturamentoText"
                                        FontSize="20"
                                        FontWeight="Bold"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- FATURAMENTO MÊS -->
+                    <Border Background="#FFE8A1"
+                            Width="220"
+                            Height="100"
+                            Margin="10"
+                            CornerRadius="10">
+
+                        <StackPanel Margin="10">
+
+                            <TextBlock Text="Faturamento do Mês"
+                                       FontSize="14"/>
+
+                            <TextBlock x:Name="FaturamentoMesText"
+                                       FontSize="20"
+                                       FontWeight="Bold"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- LUCRO BRUTO -->
+                    <Border Background="#C8F7C5"
+                            Width="220"
+                            Height="100"
+                            Margin="10"
+                            CornerRadius="10">
+
+                        <StackPanel Margin="10">
+
+                            <TextBlock Text="Lucro Bruto"
+                                       FontSize="14"/>
+
+                            <TextBlock x:Name="LucroBrutoText"
+                                       FontSize="20"
+                                       FontWeight="Bold"/>
+
                         </StackPanel>
 
                     </Border>
@@ -145,7 +201,7 @@
 
                 <!-- GRID -->
                 <DataGrid x:Name="OrcamentosGrid"
-                          Height="300"
+                          Height="320"
                           Margin="0,0,0,10"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False">
@@ -158,21 +214,21 @@
 
                         <DataGridTextColumn Header="Cliente"
                                             Binding="{Binding Cliente}"
-                                            Width="200"/>
+                                            Width="250"/>
 
                         <DataGridTextColumn Header="Total"
                                             Binding="{Binding Total}"
-                                            Width="120"/>
+                                            Width="150"/>
 
                         <DataGridTextColumn Header="Status"
                                             Binding="{Binding Status}"
-                                            Width="150"/>
+                                            Width="180"/>
 
                     </DataGrid.Columns>
 
                 </DataGrid>
 
-                <!-- BOTÕES STATUS -->
+                <!-- BOTÕES -->
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right">
 

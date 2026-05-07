@@ -36,7 +36,7 @@ namespace OrcaPro
             using (var db = new AppDbContext())
             {
                 var dados = db.Orcamentos
-                    .Where(o => o.Status == "Aprovado" && o.DataCriacao.Year == ano)
+                    .Where(o => o.Status == "Finalizado"  && o.DataCriacao.Year == ano)
                     .ToList()
                     .GroupBy(o => o.DataCriacao.Month)
                     .Select(g => new

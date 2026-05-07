@@ -16,6 +16,7 @@ namespace OrcaPro.Services
             int parcelas,
             DateTime primeiroVencimento)
         {
+            // 🔥 LICENÇA QUESTPDF
             QuestPDF.Settings.License = LicenseType.Community;
 
             using (var db = new AppDbContext())
@@ -41,9 +42,10 @@ namespace OrcaPro.Services
 
                 Directory.CreateDirectory(pasta);
 
+                // 🔥 NOME ÚNICO DO PDF
                 var caminho = Path.Combine(
                     pasta,
-                    $"Orcamento_{orc.Id}.pdf");
+                    $"Orcamento_{orc.Id}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
                 // 🔥 CAMINHO DA LOGO
                 var logoPath = Path.Combine(
@@ -52,6 +54,10 @@ namespace OrcaPro.Services
                     "logo.png");
 
                 decimal valorParcela = orc.Total / parcelas;
+
+                // 🔥 LIBERA ARQUIVOS EM USO
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 Document.Create(container =>
                 {
@@ -70,7 +76,7 @@ namespace OrcaPro.Services
                                    .Image(logoPath);
                             }
 
-                            // TEXTO
+                            // TEXTO HEADER
                             row.RelativeItem().Column(col =>
                             {
                                 col.Item()
@@ -95,50 +101,62 @@ namespace OrcaPro.Services
                             col.Spacing(12);
 
                             // CLIENTE
-                            col.Item().Text($"Cliente: {cliente?.Nome}")
-                                .FontSize(14);
+                            col.Item()
+                               .Text($"Cliente: {cliente?.Nome}")
+                               .FontSize(14);
 
-                            col.Item().Text($"Responsável: {responsavel}");
+                            // RESPONSÁVEL
+                            col.Item()
+                               .Text($"Responsável: {responsavel}");
 
-                            col.Item().Text($"Status: {orc.Status}");
+                            // STATUS
+                            col.Item()
+                               .Text($"Status: {orc.Status}");
 
-                            col.Item().Text($"Valor Total: R$ {orc.Total:N2}")
-                                .Bold()
-                                .FontSize(16);
+                            // TOTAL
+                            col.Item()
+                               .Text($"Valor Total: R$ {orc.Total:N2}")
+                               .Bold()
+                               .FontSize(16);
 
                             col.Item().LineHorizontal(1);
 
                             // 🔥 SERVIÇOS
                             col.Item()
-                                .PaddingTop(10)
-                                .Text("Serviços")
-                                .Bold()
-                                .FontSize(18);
+                               .PaddingTop(10)
+                               .Text("Serviços")
+                               .Bold()
+                               .FontSize(18);
 
                             foreach (var item in itens)
                             {
-                                col.Item().Border(1).Padding(8).Column(itemCol =>
-                                {
-                                    itemCol.Item().Text(item.Descricao).Bold();
+                                col.Item()
+                                   .Border(1)
+                                   .Padding(8)
+                                   .Column(itemCol =>
+                                   {
+                                       itemCol.Item()
+                                              .Text(item.Descricao)
+                                              .Bold();
 
-                                    itemCol.Item().Text(
-                                        $"Quantidade: {item.Quantidade}");
+                                       itemCol.Item()
+                                              .Text($"Quantidade: {item.Quantidade}");
 
-                                    itemCol.Item().Text(
-                                        $"Valor Unitário: R$ {item.ValorUnitario:N2}");
+                                       itemCol.Item()
+                                              .Text($"Valor Unitário: R$ {item.ValorUnitario:N2}");
 
-                                    itemCol.Item().Text(
-                                        $"Total: R$ {item.Total:N2}");
-                                });
+                                       itemCol.Item()
+                                              .Text($"Total: R$ {item.Total:N2}");
+                                   });
                             }
 
                             // 🔥 PARCELAMENTO
                             col.Item().PaddingTop(20);
 
                             col.Item()
-                                .Text("Parcelamento")
-                                .FontSize(18)
-                                .Bold();
+                               .Text("Parcelamento")
+                               .FontSize(18)
+                               .Bold();
 
                             for (int i = 0; i < parcelas; i++)
                             {
@@ -154,16 +172,16 @@ namespace OrcaPro.Services
                             col.Item().PaddingTop(50);
 
                             col.Item()
-                                .AlignCenter()
-                                .Text("________________________________");
+                               .AlignCenter()
+                               .Text("________________________________");
 
                             col.Item()
-                                .AlignCenter()
-                                .Text(responsavel);
+                               .AlignCenter()
+                               .Text(responsavel);
 
                             col.Item()
-                                .AlignCenter()
-                                .Text("Responsável Técnico");
+                               .AlignCenter()
+                               .Text("Responsável Técnico");
                         });
 
                         // 🔥 FOOTER
@@ -175,7 +193,7 @@ namespace OrcaPro.Services
                 })
                 .GeneratePdf(caminho);
 
-                // 🔥 ABRE PDF
+                // 🔥 ABRIR PDF
                 System.Diagnostics.Process.Start(
                     new System.Diagnostics.ProcessStartInfo()
                     {
