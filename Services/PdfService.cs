@@ -33,6 +33,7 @@ namespace OrcaPro.Services
                     .Where(i => i.OrcamentoId == orc.Id)
                     .ToList();
 
+                // 🔥 PASTA PDF
                 var pasta = Path.Combine(
                     Environment.GetFolderPath(
                         Environment.SpecialFolder.Desktop),
@@ -44,6 +45,12 @@ namespace OrcaPro.Services
                     pasta,
                     $"Orcamento_{orc.Id}.pdf");
 
+                // 🔥 CAMINHO DA LOGO
+                var logoPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Assets",
+                    "logo.png");
+
                 decimal valorParcela = orc.Total / parcelas;
 
                 Document.Create(container =>
@@ -52,33 +59,77 @@ namespace OrcaPro.Services
                     {
                         page.Margin(30);
 
-                        // CABEÇALHO
-                        page.Header()
-                            .Text("ORÇAMENTO")
-                            .FontSize(24)
-                            .Bold();
-
-                        // CONTEÚDO
-                        page.Content().Column(col =>
+                        // 🔥 HEADER
+                        page.Header().Row(row =>
                         {
-                            col.Spacing(10);
+                            // LOGO
+                            if (File.Exists(logoPath))
+                            {
+                                row.ConstantItem(120)
+                                   .Height(70)
+                                   .Image(logoPath);
+                            }
 
-                            col.Item().Text($"Cliente: {cliente?.Nome}");
+                            // TEXTO
+                            row.RelativeItem().Column(col =>
+                            {
+                                col.Item()
+                                   .AlignRight()
+                                   .Text("ORÇAMENTO")
+                                   .FontSize(24)
+                                   .Bold();
+
+                                col.Item()
+                                   .AlignRight()
+                                   .Text($"Data: {DateTime.Now:dd/MM/yyyy}");
+
+                                col.Item()
+                                   .AlignRight()
+                                   .Text($"Orçamento Nº {orc.Id}");
+                            });
+                        });
+
+                        // 🔥 CONTEÚDO
+                        page.Content().PaddingVertical(20).Column(col =>
+                        {
+                            col.Spacing(12);
+
+                            // CLIENTE
+                            col.Item().Text($"Cliente: {cliente?.Nome}")
+                                .FontSize(14);
+
+                            col.Item().Text($"Responsável: {responsavel}");
 
                             col.Item().Text($"Status: {orc.Status}");
 
-                            col.Item().Text($"Valor Total: R$ {orc.Total:N2}");
+                            col.Item().Text($"Valor Total: R$ {orc.Total:N2}")
+                                .Bold()
+                                .FontSize(16);
 
                             col.Item().LineHorizontal(1);
 
-                            // ITENS
+                            // 🔥 SERVIÇOS
+                            col.Item()
+                                .PaddingTop(10)
+                                .Text("Serviços")
+                                .Bold()
+                                .FontSize(18);
+
                             foreach (var item in itens)
                             {
-                                col.Item().Text(
-                                    $"{item.Descricao} | " +
-                                    $"Qtd: {item.Quantidade} | " +
-                                    $"Unit: R$ {item.ValorUnitario:N2} | " +
-                                    $"Total: R$ {item.Total:N2}");
+                                col.Item().Border(1).Padding(8).Column(itemCol =>
+                                {
+                                    itemCol.Item().Text(item.Descricao).Bold();
+
+                                    itemCol.Item().Text(
+                                        $"Quantidade: {item.Quantidade}");
+
+                                    itemCol.Item().Text(
+                                        $"Valor Unitário: R$ {item.ValorUnitario:N2}");
+
+                                    itemCol.Item().Text(
+                                        $"Total: R$ {item.Total:N2}");
+                                });
                             }
 
                             // 🔥 PARCELAMENTO
@@ -94,30 +145,37 @@ namespace OrcaPro.Services
                                 var data = primeiroVencimento.AddMonths(i);
 
                                 col.Item().Text(
-                                    $"{i + 1}ª parcela - " +
-                                    $"R$ {valorParcela:N2} - " +
+                                    $"{i + 1}ª parcela — " +
+                                    $"R$ {valorParcela:N2} — " +
                                     $"Vencimento: {data:dd/MM/yyyy}");
                             }
 
-                            // ASSINATURA
-                            col.Item().PaddingTop(40);
+                            // 🔥 ASSINATURA
+                            col.Item().PaddingTop(50);
 
-                            col.Item().Text("________________________________");
+                            col.Item()
+                                .AlignCenter()
+                                .Text("________________________________");
 
-                            col.Item().Text(responsavel);
+                            col.Item()
+                                .AlignCenter()
+                                .Text(responsavel);
 
-                            col.Item().Text("Assinatura Responsável");
+                            col.Item()
+                                .AlignCenter()
+                                .Text("Responsável Técnico");
                         });
 
-                        // RODAPÉ
+                        // 🔥 FOOTER
                         page.Footer()
                             .AlignCenter()
-                            .Text("VR Reservatórios");
+                            .Text("VR Reservatórios")
+                            .FontSize(10);
                     });
                 })
                 .GeneratePdf(caminho);
 
-                // ABRE PDF
+                // 🔥 ABRE PDF
                 System.Diagnostics.Process.Start(
                     new System.Diagnostics.ProcessStartInfo()
                     {
