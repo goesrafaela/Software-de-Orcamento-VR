@@ -16,7 +16,15 @@ namespace OrcaPro
             CarregarDados();
         }
 
-        // 🔥 MODEL DO GRID
+        // 🔥 ITEM PAGAMENTO
+        public class PagamentoItem
+        {
+            public string Nome { get; set; } = "";
+
+            public bool Pago { get; set; }
+        }
+
+        // 🔥 ITEM HISTÓRICO
         public class HistoricoItem
         {
             public int Id { get; set; }
@@ -29,11 +37,9 @@ namespace OrcaPro
 
             public string Status { get; set; } = "";
 
-            public bool PrimeiraParcelaPaga { get; set; }
+            public int Parcelas { get; set; }
 
-            public bool SegundaParcelaPaga { get; set; }
-
-            public bool TerceiraParcelaPaga { get; set; }
+            public List<PagamentoItem> Pagamentos { get; set; } = new();
         }
 
         // 🔥 CARREGAR DADOS
@@ -41,35 +47,50 @@ namespace OrcaPro
         {
             try
             {
-                 using (var db = new AppDbContext())
+                using (var db = new AppDbContext())
                 {
-                    var lista = db.Orcamentos
-                        .ToList()
-                        .Select(o => new
+                    var lista = new List<HistoricoItem>();
+
+                    var orcamentos = db.Orcamentos.ToList();
+
+                    foreach (var o in orcamentos)
+                    {
+                        var cliente = db.Clientes
+                            .FirstOrDefault(c => c.Id == o.ClienteId);
+
+                        var servicos = db.OrcamentoItens
+                            .Where(i => i.OrcamentoId == o.Id)
+                            .Select(i => i.Descricao)
+                            .ToList();
+
+                        var pagamentos = new List<PagamentoItem>();
+
+                        for (int i = 1; i <= o.Parcelas; i++)
                         {
-                            o.Id,
+                            pagamentos.Add(new PagamentoItem
+                            {
+                                Nome = $"{i}ª Parcela",
+                                Pago = false
+                            });
+                        }
 
-                            Cliente = db.Clientes
-                                .FirstOrDefault(c => c.Id == o.ClienteId)?.Nome,
+                        lista.Add(new HistoricoItem
+                        {
+                            Id = o.Id,
 
-                            Servicos = string.Join(", ",
-                                db.OrcamentoItens
-                                .Where(i => i.OrcamentoId == o.Id)
-                                .Select(i => i.Descricao)),
+                            Cliente = cliente?.Nome ?? "",
 
-                            o.Total,
-                            o.Status,
-                            o.Parcelas,
+                            Servicos = string.Join(", ", servicos),
 
-                            Pagamentos = Enumerable.Range(1, o.Parcelas)
-                                .Select(p => new
-                                {
-                                    Nome = $"{p}ª",
-                                    Pago = false
-                                })
-                                .ToList()
-                        })
-                        .ToList();
+                            Total = o.Total,
+
+                            Status = o.Status ?? "",
+
+                            Parcelas = o.Parcelas,
+
+                            Pagamentos = pagamentos
+                        });
+                    }
 
                     HistoricoGrid.ItemsSource = lista;
                 }
@@ -103,45 +124,6 @@ namespace OrcaPro
                 case "Em andamento":
                     e.Row.Background = Brushes.LightYellow;
                     break;
-            }
-        }
-
-        // 💾 SALVAR PAGAMENTOS
-        private void SalvarPagamentos_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var lista = HistoricoGrid.ItemsSource as List<HistoricoItem>;
-
-                if (lista == null)
-                    return;
-
-                using (var db = new AppDbContext())
-                {
-                    foreach (var item in lista)
-                    {
-                        var orc = db.Orcamentos.Find(item.Id);
-
-                        if (orc != null)
-                        {
-                            orc.PrimeiraParcelaPaga = item.PrimeiraParcelaPaga;
-
-                            orc.SegundaParcelaPaga = item.SegundaParcelaPaga;
-
-                            orc.TerceiraParcelaPaga = item.TerceiraParcelaPaga;
-                        }
-                    }
-
-                    db.SaveChanges();
-                }
-
-                MessageBox.Show("Pagamentos atualizados!");
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show(
-                    "Erro ao salvar pagamentos:\n\n" + ex.Message
-                );
             }
         }
     }

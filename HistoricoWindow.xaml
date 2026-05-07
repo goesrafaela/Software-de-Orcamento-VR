@@ -6,20 +6,18 @@
         Width="1200"
         Background="#F3F6FA"
         WindowStartupLocation="CenterScreen"
-         WindowState="Maximized"
+        WindowState="Maximized"
         WindowStyle="SingleBorderWindow">
 
     <Grid Margin="20">
 
         <StackPanel>
 
-            <!-- TÍTULO -->
             <TextBlock Text="Histórico de Orçamentos"
                        FontSize="24"
                        FontWeight="Bold"
                        Margin="0,0,0,20"/>
 
-            <!-- GRID -->
             <DataGrid x:Name="HistoricoGrid"
                       AutoGenerateColumns="False"
                       Height="520"
@@ -27,37 +25,30 @@
 
                 <DataGrid.Columns>
 
-                    <!-- ID -->
                     <DataGridTextColumn Header="ID"
                                         Binding="{Binding Id}"
                                         Width="60"/>
 
-                    <!-- CLIENTE -->
                     <DataGridTextColumn Header="Cliente"
                                         Binding="{Binding Cliente}"
                                         Width="180"/>
 
-                    <!-- SERVIÇOS -->
                     <DataGridTextColumn Header="Serviços"
                                         Binding="{Binding Servicos}"
                                         Width="250"/>
 
-                    <!-- TOTAL -->
                     <DataGridTextColumn Header="Total"
                                         Binding="{Binding Total}"
                                         Width="120"/>
 
-                    <!-- STATUS -->
                     <DataGridTextColumn Header="Status"
                                         Binding="{Binding Status}"
                                         Width="120"/>
 
-                    <!-- PARCELAS -->
                     <DataGridTextColumn Header="Parcelas"
                                         Binding="{Binding Parcelas}"
                                         Width="90"/>
 
-                    <!-- PAGAMENTOS -->
                     <DataGridTemplateColumn Header="Pagamentos"
                                             Width="350">
 
