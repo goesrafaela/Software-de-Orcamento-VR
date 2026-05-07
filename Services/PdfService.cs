@@ -1,49 +1,129 @@
+using System;
 using System.IO;
 using System.Linq;
-using OrcaPro.Models;
 using OrcaPro.Data;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace OrcaPro.Services
 {
-    public class PdfService
+    public static class PdfService
     {
-        public static void GerarOrcamento(int orcamentoId)
+        public static void GerarOrcamento(
+            int orcamentoId,
+            string responsavel,
+            int parcelas,
+            DateTime primeiroVencimento)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             using (var db = new AppDbContext())
             {
-                var orc = db.Orcamentos.First(o => o.Id == orcamentoId);
-                var itens = db.OrcamentoItens.Where(i => i.OrcamentoId == orcamentoId).ToList();
-                var cliente = db.Clientes.First(c => c.Id == orc.ClienteId);
+                var orc = db.Orcamentos
+                    .FirstOrDefault(o => o.Id == orcamentoId);
 
-                string caminho = $"Orcamento_{orc.Id}.pdf";
+                if (orc == null)
+                    return;
 
-                var writer = new PdfWriter(caminho);
-                var pdf = new PdfDocument(writer);
-                var doc = new Document(pdf);
+                var cliente = db.Clientes
+                    .FirstOrDefault(c => c.Id == orc.ClienteId);
 
-                doc.Add(new Paragraph("ORÇAMENTO")
-                    .SetFontSize(20));
+                var itens = db.OrcamentoItens
+                    .Where(i => i.OrcamentoId == orc.Id)
+                    .ToList();
 
-                doc.Add(new Paragraph($"Cliente: {cliente.Nome}"));
-                doc.Add(new Paragraph($"Data: {orc.Data}"));
+                var pasta = Path.Combine(
+                    Environment.GetFolderPath(
+                        Environment.SpecialFolder.Desktop),
+                    "Orcamentos");
 
-                doc.Add(new Paragraph(" "));
+                Directory.CreateDirectory(pasta);
 
-                foreach (var item in itens)
+                var caminho = Path.Combine(
+                    pasta,
+                    $"Orcamento_{orc.Id}.pdf");
+
+                decimal valorParcela = orc.Total / parcelas;
+
+                Document.Create(container =>
                 {
-                    doc.Add(new Paragraph(
-                        $"{item.Descricao} - Qtd: {item.Quantidade} - R$ {item.Total}"
-                    ));
-                }
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
 
-                doc.Add(new Paragraph(" "));
-                doc.Add(new Paragraph($"TOTAL: R$ {orc.Total}")
-                    .SetFontSize(16));
+                        // CABEÇALHO
+                        page.Header()
+                            .Text("ORÇAMENTO")
+                            .FontSize(24)
+                            .Bold();
 
-                doc.Close();
+                        // CONTEÚDO
+                        page.Content().Column(col =>
+                        {
+                            col.Spacing(10);
+
+                            col.Item().Text($"Cliente: {cliente?.Nome}");
+
+                            col.Item().Text($"Status: {orc.Status}");
+
+                            col.Item().Text($"Valor Total: R$ {orc.Total:N2}");
+
+                            col.Item().LineHorizontal(1);
+
+                            // ITENS
+                            foreach (var item in itens)
+                            {
+                                col.Item().Text(
+                                    $"{item.Descricao} | " +
+                                    $"Qtd: {item.Quantidade} | " +
+                                    $"Unit: R$ {item.ValorUnitario:N2} | " +
+                                    $"Total: R$ {item.Total:N2}");
+                            }
+
+                            // 🔥 PARCELAMENTO
+                            col.Item().PaddingTop(20);
+
+                            col.Item()
+                                .Text("Parcelamento")
+                                .FontSize(18)
+                                .Bold();
+
+                            for (int i = 0; i < parcelas; i++)
+                            {
+                                var data = primeiroVencimento.AddMonths(i);
+
+                                col.Item().Text(
+                                    $"{i + 1}ª parcela - " +
+                                    $"R$ {valorParcela:N2} - " +
+                                    $"Vencimento: {data:dd/MM/yyyy}");
+                            }
+
+                            // ASSINATURA
+                            col.Item().PaddingTop(40);
+
+                            col.Item().Text("________________________________");
+
+                            col.Item().Text(responsavel);
+
+                            col.Item().Text("Assinatura Responsável");
+                        });
+
+                        // RODAPÉ
+                        page.Footer()
+                            .AlignCenter()
+                            .Text("VR Reservatórios");
+                    });
+                })
+                .GeneratePdf(caminho);
+
+                // ABRE PDF
+                System.Diagnostics.Process.Start(
+                    new System.Diagnostics.ProcessStartInfo()
+                    {
+                        FileName = caminho,
+                        UseShellExecute = true
+                    });
             }
         }
     }

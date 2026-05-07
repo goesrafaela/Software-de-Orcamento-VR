@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -6,7 +7,6 @@ using System.Windows.Media;
 using OrcaPro.Data;
 using OrcaPro.Services;
 using OrcaPro.Models;
-
 
 namespace OrcaPro
 {
@@ -18,10 +18,17 @@ namespace OrcaPro
         public OrcamentosWindow()
         {
             InitializeComponent();
+
             CarregarClientes();
+
             AtualizarGrid();
+
+            ParcelasCombo.SelectedIndex = 0;
+            
+            PrimeiroVencimentoPicker.SelectedDate = DateTime.Now;
         }
 
+        // 🔥 CARREGA CLIENTES
         private void CarregarClientes()
         {
             using (var db = new AppDbContext())
@@ -36,25 +43,57 @@ namespace OrcaPro
                     ClienteCombo.SelectedIndex = 0;
             }
         }
+
+        // 🔥 VALOR AUTOMÁTICO
+        private void ServicoCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ServicoCombo.SelectedItem == null)
+                return;
+
+            var servico = ((ComboBoxItem)ServicoCombo.SelectedItem)
+                .Content
+                .ToString();
+
+            switch (servico)
+            {
+                case "Reforma e Impermeabilização":
+                    ValorBox.Text = "3500";
+                    break;
+
+                case "Limpeza de Reservatórios":
+                    ValorBox.Text = "1200";
+                    break;
+
+                case "Manutenção Estrutural":
+                    ValorBox.Text = "2500";
+                    break;
+
+                case "Pintura Técnica":
+                    ValorBox.Text = "1800";
+                    break;
+            }
+        }
+
+        // 🎨 COR DOS ITENS
         private void ItensGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             var item = e.Row.Item as OrcamentoItem;
 
-            if (item == null) return;
+            if (item == null)
+                return;
 
-            // exemplo de destaque
             if (item.Total > 1000)
             {
                 e.Row.Background = Brushes.LightGreen;
             }
         }
 
-        // 🔥 ADICIONAR ITEM
+        // ➕ ADICIONAR ITEM
         private void AdicionarItem_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(DescricaoBox.Text))
+            if (ServicoCombo.SelectedItem == null)
             {
-                MessageBox.Show("Digite a descrição.");
+                MessageBox.Show("Selecione um serviço.");
                 return;
             }
 
@@ -70,9 +109,13 @@ namespace OrcaPro
                 return;
             }
 
+            var descricao = ((ComboBoxItem)ServicoCombo.SelectedItem)
+                .Content
+                .ToString();
+
             var item = new OrcamentoItem
             {
-                Descricao = DescricaoBox.Text,
+                Descricao = descricao,
                 Quantidade = qtd,
                 ValorUnitario = valor,
                 Total = qtd * valor
@@ -81,24 +124,28 @@ namespace OrcaPro
             itens.Add(item);
 
             AtualizarGrid();
+
             LimparCampos();
         }
 
-        // 🔄 GRID + TOTAL
+        // 🔄 ATUALIZA GRID
         private void AtualizarGrid()
         {
             ItensGrid.ItemsSource = null;
             ItensGrid.ItemsSource = itens;
 
             decimal total = itens.Sum(i => i.Total);
+
             TotalText.Text = $"TOTAL: R$ {total:N2}";
         }
 
+        // 🧹 LIMPAR
         private void LimparCampos()
         {
-            DescricaoBox.Text = "";
             QtdBox.Text = "";
             ValorBox.Text = "";
+
+            ServicoCombo.SelectedIndex = -1;
         }
 
         // ❌ EXCLUIR ITEM
@@ -113,6 +160,7 @@ namespace OrcaPro
             }
 
             itens.Remove(item);
+
             AtualizarGrid();
         }
 
@@ -141,11 +189,13 @@ namespace OrcaPro
                 };
 
                 db.Orcamentos.Add(orc);
+
                 db.SaveChanges();
 
                 foreach (var item in itens)
                 {
                     item.OrcamentoId = orc.Id;
+
                     db.OrcamentoItens.Add(item);
                 }
 
@@ -157,24 +207,39 @@ namespace OrcaPro
             MessageBox.Show("Orçamento salvo com sucesso!");
 
             itens.Clear();
+
             AtualizarGrid();
 
             AtualizarDashboard();
         }
 
-        // 📄 GERAR PDF
-        private void GerarPdf_Click(object sender, RoutedEventArgs e)
-        {
-            if (ultimoOrcamentoId == 0)
+        // 📄 PDF
+            private void GerarPdf_Click(object sender, RoutedEventArgs e)
             {
-                MessageBox.Show("Salve um orçamento antes de gerar PDF.");
-                return;
+                if (ultimoOrcamentoId == 0)
+                {
+                    MessageBox.Show("Salve um orçamento antes de gerar PDF.");
+                    return;
+                }
+
+                int parcelas = int.Parse(
+                    ((ComboBoxItem)ParcelasCombo.SelectedItem)
+                    .Content
+                    .ToString()
+                );
+
+                DateTime vencimento = PrimeiroVencimentoPicker.SelectedDate
+                    ?? DateTime.Now;
+
+                PdfService.GerarOrcamento(
+                    ultimoOrcamentoId,
+                    ResponsavelBox.Text,
+                    parcelas,
+                    vencimento
+                );
+
+                MessageBox.Show("PDF gerado com sucesso!");
             }
-
-            PdfService.GerarOrcamento(ultimoOrcamentoId);
-
-            MessageBox.Show("PDF gerado com sucesso!");
-        }
 
         // ✅ APROVAR
         private void Aprovar_Click(object sender, RoutedEventArgs e)
@@ -188,7 +253,7 @@ namespace OrcaPro
             AtualizarStatus("Finalizado");
         }
 
-        // 🔥 ALTERA STATUS
+        // 🔥 ALTERAR STATUS
         private void AtualizarStatus(string status)
         {
             if (ultimoOrcamentoId == 0)
@@ -204,6 +269,7 @@ namespace OrcaPro
                 if (orc != null)
                 {
                     orc.Status = status;
+
                     db.SaveChanges();
                 }
             }
@@ -213,12 +279,13 @@ namespace OrcaPro
             AtualizarDashboard();
         }
 
-        // 🎨 COR AUTOMÁTICA (se usar grid de orçamentos)
+        // 🎨 COR AUTOMÁTICA
         private void OrcamentosGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             var orc = e.Row.Item as Orcamento;
 
-            if (orc == null) return;
+            if (orc == null)
+                return;
 
             switch (orc.Status)
             {
@@ -236,14 +303,14 @@ namespace OrcaPro
             }
         }
 
-        // 🔄 ATUALIZA DASHBOARD (CORRETO)
+        // 🔄 ATUALIZA DASHBOARD
         private void AtualizarDashboard()
         {
             var dashboard = Application.Current.Windows
                 .OfType<DashboardWindow>()
                 .FirstOrDefault();
 
-            dashboard?.CarregarDashboard(); // 🔥 agora sem reflection
+            dashboard?.CarregarDashboard();
         }
     }
 }

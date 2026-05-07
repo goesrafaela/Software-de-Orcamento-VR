@@ -23,19 +23,84 @@
                           Height="30"/>
             </StackPanel>
 
+            <!-- PARCELAMENTO -->
+<Border Background="White"
+        Padding="15"
+        CornerRadius="10"
+        Margin="0,0,0,15">
+
+    <StackPanel>
+
+        <TextBlock Text="Parcelamento"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+        <StackPanel Orientation="Horizontal">
+
+            <!-- Parcelas -->
+            <StackPanel Margin="5">
+                <TextBlock Text="Qtd Parcelas"
+                           FontSize="12"
+                           Foreground="#555"/>
+
+                <ComboBox x:Name="ParcelasCombo"
+                          Width="120"
+                          Height="30">
+
+                    <ComboBoxItem Content="1"/>
+                    <ComboBoxItem Content="2"/>
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                    <ComboBoxItem Content="5"/>
+                    <ComboBoxItem Content="6"/>
+                    <ComboBoxItem Content="12"/>
+
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Primeiro vencimento -->
+            <StackPanel Margin="5">
+                <TextBlock Text="Primeiro Vencimento"
+                           FontSize="12"
+                           Foreground="#555"/>
+
+                <DatePicker x:Name="PrimeiroVencimentoPicker"
+                            Width="180"
+                            Height="30"/>
+            </StackPanel>
+
+        </StackPanel>
+
+    </StackPanel>
+
+</Border>
+
             <!-- FORM ITEM -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
 
-                <!-- Descrição -->
-                <StackPanel Margin="5">
-                    <TextBlock Text="Descrição do serviço/produto"
-                               FontSize="12"
-                               Foreground="#555"
-                               Margin="0,0,0,3"/>
-                    <TextBox x:Name="DescricaoBox"
-                             Width="250"
-                             Height="30"/>
-                </StackPanel>
+               <!-- SERVIÇOS -->
+            <!-- SERVIÇOS -->
+            <StackPanel Margin="5">
+
+                <TextBlock Text="Serviço"
+                        FontSize="12"
+                        Foreground="#555"
+                        Margin="0,0,0,3"/>
+
+                <ComboBox x:Name="ServicoCombo"
+                        Width="260"
+                        Height="30"
+                        SelectionChanged="ServicoCombo_SelectionChanged">
+
+                    <ComboBoxItem Content="Reforma e Impermeabilização"/>
+                    <ComboBoxItem Content="Limpeza de Reservatórios"/>
+                    <ComboBoxItem Content="Manutenção Estrutural"/>
+                    <ComboBoxItem Content="Pintura Técnica"/>
+
+                </ComboBox>
+
+            </StackPanel>
 
                 <!-- Quantidade -->
                 <StackPanel Margin="5">
@@ -91,40 +156,70 @@
                            FontWeight="Bold"
                            HorizontalAlignment="Right"/>
             </Border>
+            <!-- ASSINATURA -->
+            <StackPanel Margin="0,15,0,0">
 
-            <!-- AÇÕES -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                <TextBlock Text="Nome do responsável"
+                        FontWeight="Bold"
+                        Margin="0,0,0,5"/>
 
+                <TextBox x:Name="ResponsavelBox"
+                        Height="30"
+                        Width="250"/>
+
+            </StackPanel>
+
+                        <!-- AÇÕES -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,15,0,0">
+
+                <!-- SALVAR -->
                 <Button Content="Salvar Orçamento"
                         Margin="5"
                         Height="35"
+                        Padding="15,0"
                         Background="#1E5FA8"
                         Foreground="White"
                         Click="Salvar_Click"/>
 
+                <!-- GERAR PDF -->
+                <Button Content="Gerar PDF"
+                        Margin="5"
+                        Height="35"
+                        Padding="15,0"
+                        Background="#28A745"
+                        Foreground="White"
+                        Click="GerarPdf_Click"/>
+
+                <!-- APROVAR -->
                 <Button Content="Aprovar"
                         Margin="5"
                         Height="35"
-                        Background="#28A745"
+                        Padding="15,0"
+                        Background="#5CB85C"
                         Foreground="White"
                         Click="Aprovar_Click"/>
 
+                <!-- FINALIZAR -->
                 <Button Content="Finalizar"
                         Margin="5"
                         Height="35"
-                        Background="#6F42C1"
+                        Padding="15,0"
+                        Background="#5BC0DE"
                         Foreground="White"
                         Click="Finalizar_Click"/>
 
+                <!-- EXCLUIR -->
                 <Button Content="Excluir Item"
                         Margin="5"
                         Height="35"
+                        Padding="15,0"
                         Background="#D9534F"
                         Foreground="White"
                         Click="ExcluirItem_Click"/>
 
             </StackPanel>
-
         </StackPanel>
 
     </Grid>

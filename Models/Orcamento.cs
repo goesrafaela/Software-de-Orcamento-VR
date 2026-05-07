@@ -19,8 +19,15 @@ namespace OrcaPro.Models
         public decimal Total { get; set; }
 
         public List<OrcamentoItem> Itens { get; set; } = new();
+        
         public string Status { get; set; } = "Em andamento";
+        
+        public int QuantidadeParcelas { get; set; }
+
+        public DateTime PrimeiroVencimento { get; set; } = DateTime.Now;
 
         public DateTime DataCriacao { get; set; } = DateTime.Now;
+
+        
     }
 }

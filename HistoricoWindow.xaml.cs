@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using OrcaPro.Data;
+using OrcaPro.Models;
 
 namespace OrcaPro
 {
@@ -11,23 +13,46 @@ namespace OrcaPro
         public HistoricoWindow()
         {
             InitializeComponent();
-            CarregarFiltros();
-            CarregarDados();
+
+            Loaded += HistoricoWindow_Loaded;
+        }
+
+        private void HistoricoWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                CarregarFiltros();
+                CarregarDados();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Erro ao abrir histórico:\n\n" + ex.Message,
+                    "Erro",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void CarregarFiltros()
         {
             using (var db = new AppDbContext())
             {
+                ClienteFiltro.Items.Clear();
+
                 var clientes = db.Clientes.ToList();
 
                 ClienteFiltro.Items.Add("Todos");
 
                 foreach (var c in clientes)
+                {
                     ClienteFiltro.Items.Add(c.Nome);
+                }
 
                 ClienteFiltro.SelectedIndex = 0;
-                StatusFiltro.SelectedIndex = 0;
+
+                if (StatusFiltro.Items.Count > 0)
+                    StatusFiltro.SelectedIndex = 0;
             }
         }
 
@@ -35,73 +60,107 @@ namespace OrcaPro
         {
             using (var db = new AppDbContext())
             {
-                var lista = db.Orcamentos.ToList();
+                var lista = db.Orcamentos
+                    .OrderByDescending(o => o.Id)
+                    .ToList();
+
                 HistoricoGrid.ItemsSource = lista;
             }
         }
 
-        // 🔍 FILTRO PRINCIPAL
+        // 🔍 FILTRAR
         private void Filtrar(object sender, RoutedEventArgs e)
         {
-            using (var db = new AppDbContext())
+            try
             {
-                var query = db.Orcamentos.AsQueryable();
-
-                // Cliente
-                if (ClienteFiltro.SelectedItem != null &&
-                    ClienteFiltro.SelectedItem.ToString() != "Todos")
+                using (var db = new AppDbContext())
                 {
-                    var nome = ClienteFiltro.SelectedItem.ToString();
-                    var cliente = db.Clientes.FirstOrDefault(c => c.Nome == nome);
+                    var query = db.Orcamentos.AsQueryable();
 
-                    if (cliente != null)
-                        query = query.Where(o => o.ClienteId == cliente.Id);
+                    // CLIENTE
+                    if (ClienteFiltro.SelectedItem != null &&
+                        ClienteFiltro.SelectedItem.ToString() != "Todos")
+                    {
+                        string nomeCliente = ClienteFiltro.SelectedItem.ToString();
+
+                        var cliente = db.Clientes
+                            .FirstOrDefault(c => c.Nome == nomeCliente);
+
+                        if (cliente != null)
+                        {
+                            query = query.Where(o => o.ClienteId == cliente.Id);
+                        }
+                    }
+
+                    // STATUS
+                    if (StatusFiltro.SelectedItem is ComboBoxItem statusItem)
+                    {
+                        string status = statusItem.Content.ToString();
+
+                        if (status != "Todos")
+                        {
+                            query = query.Where(o => o.Status == status);
+                        }
+                    }
+
+                    // BUSCA
+                    if (!string.IsNullOrWhiteSpace(BuscaBox.Text))
+                    {
+                        string termo = BuscaBox.Text.ToLower();
+
+                        query = query.Where(o =>
+                            o.Id.ToString().Contains(termo) ||
+                            (o.Status != null &&
+                             o.Status.ToLower().Contains(termo)));
+                    }
+
+                    HistoricoGrid.ItemsSource = query
+                        .OrderByDescending(o => o.Id)
+                        .ToList();
                 }
-
-                // Status
-                if (StatusFiltro.SelectedItem is ComboBoxItem statusItem &&
-                    statusItem.Content.ToString() != "Todos")
-                {
-                    var status = statusItem.Content.ToString();
-                    query = query.Where(o => o.Status == status);
-                }
-
-                // Busca
-                if (!string.IsNullOrEmpty(BuscaBox.Text))
-                {
-                    var termo = BuscaBox.Text.ToLower();
-
-                    query = query.Where(o =>
-                        o.Id.ToString().Contains(termo) ||
-                        o.Status.ToLower().Contains(termo));
-                }
-
-                HistoricoGrid.ItemsSource = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Erro ao filtrar:\n\n" + ex.Message,
+                    "Erro",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
-        // 🎨 CORES
+        // 🎨 CORES AUTOMÁTICAS
         private void Grid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
-            dynamic item = e.Row.Item;
-
-            if (item == null) return;
-
-            string status = item.Status;
-
-            switch (status)
+            try
             {
-                case "Aprovado":
-                    e.Row.Background = Brushes.LightGreen;
-                    break;
+                var item = e.Row.Item as Orcamento;
 
-                case "Finalizado":
-                    e.Row.Background = Brushes.LightBlue;
-                    break;
+                if (item == null)
+                    return;
 
-                case "Em andamento":
-                    e.Row.Background = Brushes.LightYellow;
-                    break;
+                switch (item.Status)
+                {
+                    case "Aprovado":
+                        e.Row.Background = Brushes.LightGreen;
+                        break;
+
+                    case "Finalizado":
+                        e.Row.Background = Brushes.LightBlue;
+                        break;
+
+                    case "Em andamento":
+                        e.Row.Background = Brushes.LightYellow;
+                        break;
+
+                    default:
+                        e.Row.Background = Brushes.White;
+                        break;
+                }
+            }
+            catch
+            {
+                // evita crash visual
             }
         }
     }

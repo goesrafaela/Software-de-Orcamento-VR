@@ -24,7 +24,6 @@ namespace OrcaPro
             {
                 using (var db = new AppDbContext())
                 {
-                    // 🔥 garante que banco existe
                     db.Database.EnsureCreated();
 
                     // CLIENTES
@@ -32,7 +31,8 @@ namespace OrcaPro
                     ClientesCount.Text = totalClientes.ToString();
 
                     // ORÇAMENTOS
-                    var orcamentos = db.Orcamentos?.ToList() ?? new System.Collections.Generic.List<Models.Orcamento>();
+                    var orcamentos = db.Orcamentos?.ToList()
+                        ?? new System.Collections.Generic.List<Models.Orcamento>();
 
                     // STATUS
                     EmAndamentoCount.Text = orcamentos
@@ -44,17 +44,31 @@ namespace OrcaPro
                         .ToString();
 
                     // FATURAMENTO
-                    var faturamento = orcamentos
-                        .Where(o => o.Status == "Aprovado")
-                        .Sum(o => o.Total);
+                   var faturamento = orcamentos
+                    .Where(o =>
+                        (o.Status == "Aprovado" ||
+                        o.Status == "Finalizado")
+                        &&
+                        o.DataCriacao.Month == DateTime.Now.Month
+                        &&
+                        o.DataCriacao.Year == DateTime.Now.Year)
+                    .Sum(o => o.Total);
 
                     FaturamentoText.Text = $"R$ {faturamento:N2}";
 
                     // GRID
                     OrcamentosGrid.ItemsSource = orcamentos
-                        .OrderByDescending(o => o.Id)
-                        .Take(10)
-                        .ToList();
+                    .OrderByDescending(o => o.Id)
+                    .Take(10)
+                    .Select(o => new
+                    {
+                        o.Id,
+                        Cliente = db.Clientes
+                            .FirstOrDefault(c => c.Id == o.ClienteId)?.Nome,
+                        o.Total,
+                        o.Status
+                    })
+                    .ToList();
                 }
             }
             catch (Exception ex)
@@ -127,6 +141,58 @@ namespace OrcaPro
         private void Sair_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        // ✅ APROVAR
+        private void Aprovar_Click(object sender, RoutedEventArgs e)
+        {
+            AlterarStatus("Aprovado");
+        }
+
+        // ✅ EM ANDAMENTO
+        private void Andamento_Click(object sender, RoutedEventArgs e)
+        {
+            AlterarStatus("Em andamento");
+        }
+
+        // ✅ FINALIZAR
+        private void Finalizar_Click(object sender, RoutedEventArgs e)
+        {
+            AlterarStatus("Finalizado");
+        }
+
+        // ✅ ALTERAR STATUS
+        private void AlterarStatus(string novoStatus)
+        {
+            try
+            {
+                var orcamento = OrcamentosGrid.SelectedItem as OrcaPro.Models.Orcamento;
+
+                if (orcamento == null)
+                {
+                    MessageBox.Show("Selecione um orçamento.");
+                    return;
+                }
+
+                using (var db = new AppDbContext())
+                {
+                    var item = db.Orcamentos.Find(orcamento.Id);
+
+                    if (item != null)
+                    {
+                        item.Status = novoStatus;
+                        db.SaveChanges();
+                    }
+                }
+
+                CarregarDashboard();
+
+                MessageBox.Show("Status atualizado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao alterar status:\n" + ex.Message);
+            }
         }
     }
 }
