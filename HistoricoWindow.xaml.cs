@@ -1,10 +1,9 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using OrcaPro.Data;
-using OrcaPro.Models;
 
 namespace OrcaPro
 {
@@ -14,153 +13,135 @@ namespace OrcaPro
         {
             InitializeComponent();
 
-            Loaded += HistoricoWindow_Loaded;
+            CarregarDados();
         }
 
-        private void HistoricoWindow_Loaded(object sender, RoutedEventArgs e)
+        // 🔥 MODEL DO GRID
+        public class HistoricoItem
         {
-            try
-            {
-                CarregarFiltros();
-                CarregarDados();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Erro ao abrir histórico:\n\n" + ex.Message,
-                    "Erro",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+            public int Id { get; set; }
+
+            public string Cliente { get; set; } = "";
+
+            public string Servicos { get; set; } = "";
+
+            public decimal Total { get; set; }
+
+            public string Status { get; set; } = "";
+
+            public bool PrimeiraParcelaPaga { get; set; }
+
+            public bool SegundaParcelaPaga { get; set; }
+
+            public bool TerceiraParcelaPaga { get; set; }
         }
 
-        private void CarregarFiltros()
-        {
-            using (var db = new AppDbContext())
-            {
-                ClienteFiltro.Items.Clear();
-
-                var clientes = db.Clientes.ToList();
-
-                ClienteFiltro.Items.Add("Todos");
-
-                foreach (var c in clientes)
-                {
-                    ClienteFiltro.Items.Add(c.Nome);
-                }
-
-                ClienteFiltro.SelectedIndex = 0;
-
-                if (StatusFiltro.Items.Count > 0)
-                    StatusFiltro.SelectedIndex = 0;
-            }
-        }
-
+        // 🔥 CARREGAR DADOS
         private void CarregarDados()
         {
-            using (var db = new AppDbContext())
-            {
-                var lista = db.Orcamentos
-                    .OrderByDescending(o => o.Id)
-                    .ToList();
-
-                HistoricoGrid.ItemsSource = lista;
-            }
-        }
-
-        // 🔍 FILTRAR
-        private void Filtrar(object sender, RoutedEventArgs e)
-        {
             try
             {
-                using (var db = new AppDbContext())
+                 using (var db = new AppDbContext())
                 {
-                    var query = db.Orcamentos.AsQueryable();
-
-                    // CLIENTE
-                    if (ClienteFiltro.SelectedItem != null &&
-                        ClienteFiltro.SelectedItem.ToString() != "Todos")
-                    {
-                        string nomeCliente = ClienteFiltro.SelectedItem.ToString();
-
-                        var cliente = db.Clientes
-                            .FirstOrDefault(c => c.Nome == nomeCliente);
-
-                        if (cliente != null)
+                    var lista = db.Orcamentos
+                        .ToList()
+                        .Select(o => new
                         {
-                            query = query.Where(o => o.ClienteId == cliente.Id);
-                        }
-                    }
+                            o.Id,
 
-                    // STATUS
-                    if (StatusFiltro.SelectedItem is ComboBoxItem statusItem)
-                    {
-                        string status = statusItem.Content.ToString();
+                            Cliente = db.Clientes
+                                .FirstOrDefault(c => c.Id == o.ClienteId)?.Nome,
 
-                        if (status != "Todos")
-                        {
-                            query = query.Where(o => o.Status == status);
-                        }
-                    }
+                            Servicos = string.Join(", ",
+                                db.OrcamentoItens
+                                .Where(i => i.OrcamentoId == o.Id)
+                                .Select(i => i.Descricao)),
 
-                    // BUSCA
-                    if (!string.IsNullOrWhiteSpace(BuscaBox.Text))
-                    {
-                        string termo = BuscaBox.Text.ToLower();
+                            o.Total,
+                            o.Status,
+                            o.Parcelas,
 
-                        query = query.Where(o =>
-                            o.Id.ToString().Contains(termo) ||
-                            (o.Status != null &&
-                             o.Status.ToLower().Contains(termo)));
-                    }
-
-                    HistoricoGrid.ItemsSource = query
-                        .OrderByDescending(o => o.Id)
+                            Pagamentos = Enumerable.Range(1, o.Parcelas)
+                                .Select(p => new
+                                {
+                                    Nome = $"{p}ª",
+                                    Pago = false
+                                })
+                                .ToList()
+                        })
                         .ToList();
+
+                    HistoricoGrid.ItemsSource = lista;
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MessageBox.Show(
-                    "Erro ao filtrar:\n\n" + ex.Message,
-                    "Erro",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                    "Erro ao carregar histórico:\n\n" + ex.Message
+                );
             }
         }
 
-        // 🎨 CORES AUTOMÁTICAS
+        // 🎨 CORES
         private void Grid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            var item = e.Row.Item as HistoricoItem;
+
+            if (item == null)
+                return;
+
+            switch (item.Status)
+            {
+                case "Aprovado":
+                    e.Row.Background = Brushes.LightGreen;
+                    break;
+
+                case "Finalizado":
+                    e.Row.Background = Brushes.LightBlue;
+                    break;
+
+                case "Em andamento":
+                    e.Row.Background = Brushes.LightYellow;
+                    break;
+            }
+        }
+
+        // 💾 SALVAR PAGAMENTOS
+        private void SalvarPagamentos_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var item = e.Row.Item as Orcamento;
+                var lista = HistoricoGrid.ItemsSource as List<HistoricoItem>;
 
-                if (item == null)
+                if (lista == null)
                     return;
 
-                switch (item.Status)
+                using (var db = new AppDbContext())
                 {
-                    case "Aprovado":
-                        e.Row.Background = Brushes.LightGreen;
-                        break;
+                    foreach (var item in lista)
+                    {
+                        var orc = db.Orcamentos.Find(item.Id);
 
-                    case "Finalizado":
-                        e.Row.Background = Brushes.LightBlue;
-                        break;
+                        if (orc != null)
+                        {
+                            orc.PrimeiraParcelaPaga = item.PrimeiraParcelaPaga;
 
-                    case "Em andamento":
-                        e.Row.Background = Brushes.LightYellow;
-                        break;
+                            orc.SegundaParcelaPaga = item.SegundaParcelaPaga;
 
-                    default:
-                        e.Row.Background = Brushes.White;
-                        break;
+                            orc.TerceiraParcelaPaga = item.TerceiraParcelaPaga;
+                        }
+                    }
+
+                    db.SaveChanges();
                 }
+
+                MessageBox.Show("Pagamentos atualizados!");
             }
-            catch
+            catch (System.Exception ex)
             {
-                // evita crash visual
+                MessageBox.Show(
+                    "Erro ao salvar pagamentos:\n\n" + ex.Message
+                );
             }
         }
     }

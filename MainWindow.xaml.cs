@@ -1,7 +1,8 @@
-﻿using System.Windows;
-using System.Linq;        // 👈 AQUI
-using OrcaPro.Data;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Input;
+using OrcaPro.Data;
+using OrcaPro.Services;
 
 namespace OrcaPro
 {
@@ -10,7 +11,6 @@ namespace OrcaPro
         public MainWindow()
         {
             InitializeComponent();
-            
 
             using (var db = new AppDbContext())
             {
@@ -25,7 +25,9 @@ namespace OrcaPro
 
             ErroText.Visibility = Visibility.Collapsed;
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+            // 🔥 validação
+            if (string.IsNullOrEmpty(email) ||
+                string.IsNullOrEmpty(senha))
             {
                 MostrarErro("Preencha todos os campos.");
                 return;
@@ -37,18 +39,21 @@ namespace OrcaPro
                     u.Email == email &&
                     u.Senha == senha);
 
+                // 🔥 LOGIN OK
                 if (usuario != null)
-                
                 {
-                    
+                    // 🔥 salva usuário logado
+                    UsuarioSessao.NomeUsuario = usuario.Nome;
+
+                    // 🔥 abre dashboard
                     var dashboard = new DashboardWindow();
 
-                    // 🔥 ESSA LINHA RESOLVE O PROBLEMA
+                    // 🔥 define nova janela principal
                     Application.Current.MainWindow = dashboard;
 
                     dashboard.Show();
 
-                    // 👇 agora pode fechar sem matar o app
+                    // 🔥 fecha login sem fechar app
                     this.Close();
                 }
                 else
@@ -58,14 +63,18 @@ namespace OrcaPro
             }
         }
 
-private void MostrarErro(string mensagem)
-{
-    ErroText.Text = mensagem;
-    ErroText.Visibility = Visibility.Visible;
-}
+        // 🔥 MOSTRAR ERRO
+        private void MostrarErro(string mensagem)
+        {
+            ErroText.Text = mensagem;
+            ErroText.Visibility = Visibility.Visible;
+        }
+
+        // 🔥 ABRIR CADASTRO
         private void AbrirCadastro(object sender, MouseButtonEventArgs e)
         {
             var tela = new RegisterWindow();
+
             tela.ShowDialog();
         }
     }

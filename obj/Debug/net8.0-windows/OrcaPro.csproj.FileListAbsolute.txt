@@ -173,7 +173,6 @@ C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\OrcamentosWindow.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RegisterWindow.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\RelatorioWindow.baml
-C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\App.baml
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\ClientesWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\DashboardWindow.g.cs
 C:\Users\goesr\Documents\VRReservatorio\Software - Orçamento\OrcaPro\obj\Debug\net8.0-windows\HistoricoWindow.g.cs

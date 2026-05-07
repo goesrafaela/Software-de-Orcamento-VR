@@ -166,32 +166,35 @@ namespace OrcaPro
         {
             try
             {
-                var orcamento = OrcamentosGrid.SelectedItem as OrcaPro.Models.Orcamento;
-
-                if (orcamento == null)
+                if (OrcamentosGrid.SelectedItem == null)
                 {
                     MessageBox.Show("Selecione um orçamento.");
                     return;
                 }
 
+                dynamic linha = OrcamentosGrid.SelectedItem;
+
+                int id = linha.Id;
+
                 using (var db = new AppDbContext())
                 {
-                    var item = db.Orcamentos.Find(orcamento.Id);
+                    var orcamento = db.Orcamentos.Find(id);
 
-                    if (item != null)
+                    if (orcamento != null)
                     {
-                        item.Status = novoStatus;
+                        orcamento.Status = novoStatus;
+
                         db.SaveChanges();
                     }
                 }
 
                 CarregarDashboard();
 
-                MessageBox.Show("Status atualizado com sucesso!");
+                MessageBox.Show($"Status alterado para: {novoStatus}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao alterar status:\n" + ex.Message);
+                MessageBox.Show("Erro:\n" + ex.Message);
             }
         }
     }

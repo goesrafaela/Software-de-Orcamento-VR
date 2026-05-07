@@ -6,7 +6,9 @@
         Width="350"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#E9EEF3">
+        Background="#E9EEF3"
+        WindowState="Maximized"
+        WindowStyle="SingleBorderWindow">
 
     <Grid>
         <Border Background="White"

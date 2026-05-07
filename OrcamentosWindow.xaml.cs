@@ -13,6 +13,7 @@ namespace OrcaPro
     public partial class OrcamentosWindow : Window
     {
         private List<OrcamentoItem> itens = new();
+
         private int ultimoOrcamentoId = 0;
 
         public OrcamentosWindow()
@@ -23,12 +24,17 @@ namespace OrcaPro
 
             AtualizarGrid();
 
+            // 🔥 parcela padrão
             ParcelasCombo.SelectedIndex = 0;
-            
+
+            // 🔥 vencimento padrão
             PrimeiroVencimentoPicker.SelectedDate = DateTime.Now;
+
+            // 🔥 responsável automático
+            ResponsavelBox.Text = UsuarioSessao.NomeUsuario;
         }
 
-        // 🔥 CARREGA CLIENTES
+        // 🔥 CARREGAR CLIENTES
         private void CarregarClientes()
         {
             using (var db = new AppDbContext())
@@ -36,7 +42,9 @@ namespace OrcaPro
                 var lista = db.Clientes.ToList();
 
                 ClienteCombo.ItemsSource = lista;
+
                 ClienteCombo.DisplayMemberPath = "Nome";
+
                 ClienteCombo.SelectedValuePath = "Id";
 
                 if (lista.Count > 0)
@@ -44,7 +52,7 @@ namespace OrcaPro
             }
         }
 
-        // 🔥 VALOR AUTOMÁTICO
+        // 🔥 SERVIÇO → VALOR AUTOMÁTICO
         private void ServicoCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ServicoCombo.SelectedItem == null)
@@ -71,20 +79,6 @@ namespace OrcaPro
                 case "Pintura Técnica":
                     ValorBox.Text = "1800";
                     break;
-            }
-        }
-
-        // 🎨 COR DOS ITENS
-        private void ItensGrid_LoadingRow(object sender, DataGridRowEventArgs e)
-        {
-            var item = e.Row.Item as OrcamentoItem;
-
-            if (item == null)
-                return;
-
-            if (item.Total > 1000)
-            {
-                e.Row.Background = Brushes.LightGreen;
             }
         }
 
@@ -128,10 +122,11 @@ namespace OrcaPro
             LimparCampos();
         }
 
-        // 🔄 ATUALIZA GRID
+        // 🔄 GRID
         private void AtualizarGrid()
         {
             ItensGrid.ItemsSource = null;
+
             ItensGrid.ItemsSource = itens;
 
             decimal total = itens.Sum(i => i.Total);
@@ -139,10 +134,11 @@ namespace OrcaPro
             TotalText.Text = $"TOTAL: R$ {total:N2}";
         }
 
-        // 🧹 LIMPAR
+        // 🧹 LIMPAR CAMPOS
         private void LimparCampos()
         {
             QtdBox.Text = "";
+
             ValorBox.Text = "";
 
             ServicoCombo.SelectedIndex = -1;
@@ -179,13 +175,32 @@ namespace OrcaPro
                 return;
             }
 
+            int parcelas = int.Parse(
+                ((ComboBoxItem)ParcelasCombo.SelectedItem)
+                .Content
+                .ToString()
+            );
+
+            DateTime vencimento = PrimeiroVencimentoPicker.SelectedDate
+                ?? DateTime.Now;
+
             using (var db = new AppDbContext())
             {
                 var orc = new Orcamento
                 {
                     ClienteId = (int)ClienteCombo.SelectedValue,
+
                     Total = itens.Sum(i => i.Total),
-                    Status = "Em andamento"
+
+                    Status = "Em andamento",
+
+                    Parcelas = parcelas,
+
+                    PrimeiroVencimento = vencimento,
+
+                    Responsavel = UsuarioSessao.NomeUsuario,
+
+                    DataCriacao = DateTime.Now
                 };
 
                 db.Orcamentos.Add(orc);
@@ -213,33 +228,33 @@ namespace OrcaPro
             AtualizarDashboard();
         }
 
-        // 📄 PDF
-            private void GerarPdf_Click(object sender, RoutedEventArgs e)
+        // 📄 GERAR PDF
+        private void GerarPdf_Click(object sender, RoutedEventArgs e)
+        {
+            if (ultimoOrcamentoId == 0)
             {
-                if (ultimoOrcamentoId == 0)
-                {
-                    MessageBox.Show("Salve um orçamento antes de gerar PDF.");
-                    return;
-                }
-
-                int parcelas = int.Parse(
-                    ((ComboBoxItem)ParcelasCombo.SelectedItem)
-                    .Content
-                    .ToString()
-                );
-
-                DateTime vencimento = PrimeiroVencimentoPicker.SelectedDate
-                    ?? DateTime.Now;
-
-                PdfService.GerarOrcamento(
-                    ultimoOrcamentoId,
-                    ResponsavelBox.Text,
-                    parcelas,
-                    vencimento
-                );
-
-                MessageBox.Show("PDF gerado com sucesso!");
+                MessageBox.Show("Salve um orçamento antes de gerar PDF.");
+                return;
             }
+
+            int parcelas = int.Parse(
+                ((ComboBoxItem)ParcelasCombo.SelectedItem)
+                .Content
+                .ToString()
+            );
+
+            DateTime vencimento = PrimeiroVencimentoPicker.SelectedDate
+                ?? DateTime.Now;
+
+            PdfService.GerarOrcamento(
+                ultimoOrcamentoId,
+                UsuarioSessao.NomeUsuario,
+                parcelas,
+                vencimento
+            );
+
+            MessageBox.Show("PDF gerado com sucesso!");
+        }
 
         // ✅ APROVAR
         private void Aprovar_Click(object sender, RoutedEventArgs e)
@@ -253,7 +268,7 @@ namespace OrcaPro
             AtualizarStatus("Finalizado");
         }
 
-        // 🔥 ALTERAR STATUS
+        // 🔥 ALTERA STATUS
         private void AtualizarStatus(string status)
         {
             if (ultimoOrcamentoId == 0)
@@ -279,31 +294,21 @@ namespace OrcaPro
             AtualizarDashboard();
         }
 
-        // 🎨 COR AUTOMÁTICA
-        private void OrcamentosGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        // 🎨 COR GRID
+        private void ItensGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
-            var orc = e.Row.Item as Orcamento;
+            var item = e.Row.Item as OrcamentoItem;
 
-            if (orc == null)
+            if (item == null)
                 return;
 
-            switch (orc.Status)
+            if (item.Total > 1000)
             {
-                case "Aprovado":
-                    e.Row.Background = Brushes.LightGreen;
-                    break;
-
-                case "Finalizado":
-                    e.Row.Background = Brushes.LightBlue;
-                    break;
-
-                case "Em andamento":
-                    e.Row.Background = Brushes.LightYellow;
-                    break;
+                e.Row.Background = Brushes.LightGreen;
             }
         }
 
-        // 🔄 ATUALIZA DASHBOARD
+        // 🔄 DASHBOARD
         private void AtualizarDashboard()
         {
             var dashboard = Application.Current.Windows
